@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const {graphqlHTTP} = require('express-graphql');
+const { graphqlHTTP } = require('express-graphql');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const graphQlSchema = require('./graphql/schema/index');
@@ -12,6 +12,18 @@ const app = express();
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 app.use(isAuth);
+
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST,GET,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+
+  next();
+})
 
 //Query:- for get req fetching data and ,Mutation:-for put,update,delete data,also :-subscription,fragment
 
@@ -32,7 +44,7 @@ mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PA
   })
 
 
-app.listen(3000, (error) => {
+app.listen(8000, (error) => {
   if (error) {
     console.log("Error in server");
   }
